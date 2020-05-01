@@ -4,10 +4,8 @@ type foo
 type bar
 type bas
 
-
-0 -2 5.5 0.2 foo-a
--6 9 8.0 -77.95 bar
+0 -2 5.5 0.2 foo
+-6 9 8.01 -77.95 bar
 21 -655 98.1 7.564 bas
-
 
 end
