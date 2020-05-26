@@ -1,7 +1,6 @@
-if (0) { "Labas krabas" }
-if (1 && 0) { "Dumelis" }
-if (0) { "kai vienas" }
-else { "haha" }
-if (1 > 0) { "nulis daugiau" } else { "nulis maziau" }
+foo = 10
+bar = 2
+if (1) { print foo
+}
 
 end

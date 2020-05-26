@@ -2,15 +2,17 @@
     #include <cstdio>
     #include <iostream>
     #include <map>
+    #include <string>
     using namespace std;
 
     extern int yylex();
     extern int yyparse();
     extern FILE *yyin;
     extern int linenum;
-    map<char*, int> vars;
+    map<string, int> vars;
 
     void yyerror(const char *s);
+    void error(string err);
 %}
 
 %union {
@@ -47,13 +49,13 @@
 %token <sval> VAR
 
 %type<ival> condition expression
+%type<sval> statement if_statement var_assignment print_statement
 
 %%
 
 priverte:
     body_section footer {
         cout << "done with a priverte file!" << endl;
-        cout << "size " << vars.size() << endl;
     }
     ;
 var_assignment:
@@ -64,7 +66,11 @@ var_assignment:
     ;
 print_statement:
     PRINT VAR ENDLS {
-        cout << vars[$2] << endl;
+        if (vars.find($2) == vars.end()){
+            error("Variable " + string($2) + " does not exist.");
+        } else {
+            cout << vars[$2] << endl;
+        }
     }
     ;
 expression:
@@ -83,13 +89,12 @@ condition:
     | expression NEQ expression { $$ = $1 != $3 ? 1 : 0; }
     ;
 if_statement:
-    IF PL condition PR CL STRING CR ENDLS {
+    IF PL condition PR CL statement CR ENDLS {
         if($3) {
-            cout << "if " << $6 << endl;
-            free($6);
+            $$ = $6;
         }
     }
-    | IF PL condition PR CL STRING CR COND_ENDL ELSE CL STRING CR ENDLS {
+    | IF PL condition PR CL statement CR COND_ENDL ELSE CL statement CR ENDLS {
         if($3) {
             cout << "if " << $6 << endl;
             free($6);
@@ -103,6 +108,7 @@ statement:
     if_statement
     | var_assignment
     | print_statement
+    | STRING
     ;
 body_section:
     body_lines
@@ -112,11 +118,7 @@ body_lines:
     | body_line
     ;
 body_line:
-    INT INT DOUBLE DOUBLE STRING ENDLS {
-        cout << "new priverte: " << $1 << " " << $2 << " " << $3 << " " << $4 << " " << $5 << endl;
-        free($5);
-    }
-    | statement
+    statement
     ;
 footer:
     END ENDLS
@@ -147,4 +149,9 @@ int main(int, char**) {
 void yyerror(const char *s) {
   cout << "Parse error on line " << linenum << "! Message: " << s << endl;
   exit(-1);
+}
+
+void error(string err) {
+    cout << "Error: " << err << endl;
+    exit(-1);
 }

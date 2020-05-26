@@ -71,17 +71,19 @@
     #include <cstdio>
     #include <iostream>
     #include <map>
+    #include <string>
     using namespace std;
 
     extern int yylex();
     extern int yyparse();
     extern FILE *yyin;
     extern int linenum;
-    map<char*, int> vars;
+    map<string, int> vars;
 
     void yyerror(const char *s);
+    void error(string err);
 
-#line 85 "priverte.tab.c"
+#line 87 "priverte.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -154,13 +156,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 16 "priverte.y"
+#line 18 "priverte.y"
 
   int ival;
   double dval;
   char *sval;
 
-#line 164 "priverte.tab.c"
+#line 166 "priverte.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -408,9 +410,9 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  17
+#define YYFINAL  16
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   52
+#define YYLAST   48
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  30
@@ -419,7 +421,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  30
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  64
+#define YYNSTATES  59
 
 #define YYUNDEFTOK  2
 #define YYMAXUTOK   284
@@ -468,10 +470,10 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    54,    54,    60,    66,    71,    74,    75,    76,    77,
-      78,    79,    80,    81,    82,    83,    86,    92,   103,   104,
-     105,   108,   111,   112,   115,   119,   122,   125,   126,   129,
-     130
+       0,    57,    57,    62,    68,    77,    80,    81,    82,    83,
+      84,    85,    86,    87,    88,    89,    92,    97,   108,   109,
+     110,   111,   114,   117,   118,   121,   124,   127,   128,   131,
+     132
 };
 #endif
 
@@ -501,10 +503,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -26
+#define YYPACT_NINF -33
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-26)))
+  (!!((Yystate) == (-33)))
 
 #define YYTABLE_NINF -28
 
@@ -515,13 +517,12 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -2,    -7,   -25,   -19,   -11,     9,   -26,   -26,   -26,   -26,
-     -12,    -2,   -26,    -6,    -5,    -4,     0,   -26,    -5,   -26,
-     -26,     2,   -26,    -1,    12,   -26,     1,     3,    -5,     1,
-     -26,     2,     2,     2,     2,     2,     2,     2,     2,    10,
-     -26,     4,     1,   -26,   -26,   -26,   -26,   -26,   -26,   -26,
-     -26,     5,    -5,    18,     1,     7,    31,    33,     1,    27,
-      13,    29,    -5,     1
+      -2,    -5,   -23,   -33,   -12,     8,   -33,   -33,   -33,   -33,
+      -4,    -2,   -33,    -6,    -7,    -1,   -33,    -7,   -33,   -33,
+       2,   -33,    -3,    13,   -33,     0,    -7,     0,   -33,     2,
+       2,     2,     2,     2,     2,     2,     2,     9,   -33,     0,
+     -33,   -33,   -33,   -33,   -33,   -33,   -33,   -33,    -2,    18,
+       6,    26,    29,     0,    23,    -2,    25,    -7,     0
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -529,27 +530,26 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     0,     0,    19,    20,    18,    25,
-       0,    21,    23,     0,     0,     0,     0,     1,     0,     2,
-      22,     0,     5,     6,     0,    30,     4,     0,     0,    26,
-       9,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      29,     0,     3,     7,     8,    10,    11,    12,    13,    14,
-      15,     0,     0,     0,    24,    28,    30,     0,    16,     0,
-       0,     0,     0,    17
+       0,     0,     0,    21,     0,     0,    19,    20,    18,    25,
+       0,    22,    24,     0,     0,     0,     1,     0,     2,    23,
+       0,     5,     6,     0,    30,     4,     0,    26,     9,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,    29,     3,
+       7,     8,    10,    11,    12,    13,    14,    15,     0,     0,
+      28,    30,     0,    16,     0,     0,     0,     0,    17
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -26,   -26,   -26,   -26,    14,   -26,   -26,   -26,   -26,   -26,
-      32,   -26,   -26,   -18
+     -33,   -33,   -33,   -33,    12,   -33,   -33,   -32,   -33,   -33,
+      27,   -33,   -33,   -17
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     5,     6,     7,    23,    24,     8,     9,    10,    11,
-      12,    19,    57,    26
+      -1,     5,     6,     7,    22,    23,     8,     9,    10,    11,
+      12,    18,    52,    25
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -557,35 +557,32 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      29,     1,    21,    13,    14,    31,    32,    15,    16,    17,
-      42,    18,    33,    34,    35,    36,    37,    38,     2,    25,
-      22,    39,    51,    27,     3,    40,    28,     4,    22,    55,
-      41,    56,    52,    53,    54,    30,   -27,    58,    59,    60,
-      62,    61,     0,    20,    63,    43,    44,    45,    46,    47,
-      48,    49,    50
+      27,     1,    20,    29,    30,    13,    14,    15,    16,    39,
+      31,    32,    33,    34,    35,    36,    49,    24,     2,    17,
+      21,    48,    37,    56,    38,    26,     3,     4,    21,    50,
+      51,   -27,    28,    53,    54,    55,    57,     0,    19,     0,
+      58,    40,    41,    42,    43,    44,    45,    46,    47
 };
 
 static const yytype_int8 yycheck[] =
 {
-      18,     3,     8,    10,    29,     6,     7,    26,    19,     0,
-      28,    23,    13,    14,    15,    16,    17,    18,    20,    24,
-      26,     9,    12,    27,    26,    24,    26,    29,    26,    11,
-      27,    24,    28,    28,    52,    21,     5,    55,     5,    12,
-      11,    28,    -1,    11,    62,    31,    32,    33,    34,    35,
-      36,    37,    38
+      17,     3,     8,     6,     7,    10,    29,    19,     0,    26,
+      13,    14,    15,    16,    17,    18,    48,    24,    20,    23,
+      26,    12,     9,    55,    24,    26,    28,    29,    26,    11,
+      24,     5,    20,    50,     5,    12,    11,    -1,    11,    -1,
+      57,    29,    30,    31,    32,    33,    34,    35,    36
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,    20,    26,    29,    31,    32,    33,    36,    37,
-      38,    39,    40,    10,    29,    26,    19,     0,    23,    41,
-      40,     8,    26,    34,    35,    24,    43,    27,    26,    43,
-      34,     6,     7,    13,    14,    15,    16,    17,    18,     9,
-      24,    27,    43,    34,    34,    34,    34,    34,    34,    34,
-      34,    12,    28,    28,    43,    11,    24,    42,    43,     5,
-      12,    28,    11,    43
+       0,     3,    20,    28,    29,    31,    32,    33,    36,    37,
+      38,    39,    40,    10,    29,    19,     0,    23,    41,    40,
+       8,    26,    34,    35,    24,    43,    26,    43,    34,     6,
+       7,    13,    14,    15,    16,    17,    18,     9,    24,    43,
+      34,    34,    34,    34,    34,    34,    34,    34,    12,    37,
+      11,    24,    42,    43,     5,    12,    37,    11,    43
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -593,7 +590,7 @@ static const yytype_uint8 yyr1[] =
 {
        0,    30,    31,    32,    33,    34,    35,    35,    35,    35,
       35,    35,    35,    35,    35,    35,    36,    36,    37,    37,
-      37,    38,    39,    39,    40,    40,    41,    42,    42,    43,
+      37,    37,    38,    39,    39,    40,    41,    42,    42,    43,
       43
 };
 
@@ -602,7 +599,7 @@ static const yytype_uint8 yyr2[] =
 {
        0,     2,     2,     4,     3,     1,     1,     3,     3,     2,
        3,     3,     3,     3,     3,     3,     8,    13,     1,     1,
-       1,     1,     2,     1,     6,     1,     2,     1,     0,     2,
+       1,     1,     1,     2,     1,     1,     2,     1,     0,     2,
        1
 };
 
@@ -1288,98 +1285,100 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 54 "priverte.y"
+#line 57 "priverte.y"
     {
         cout << "done with a priverte file!" << endl;
-        cout << "size " << vars.size() << endl;
     }
-#line 1297 "priverte.tab.c"
+#line 1293 "priverte.tab.c"
     break;
 
   case 3:
-#line 60 "priverte.y"
+#line 62 "priverte.y"
     {
         vars[(yyvsp[-3].sval)] = (yyvsp[-1].ival);
         free((yyvsp[-3].sval));
     }
-#line 1306 "priverte.tab.c"
+#line 1302 "priverte.tab.c"
     break;
 
   case 4:
-#line 66 "priverte.y"
+#line 68 "priverte.y"
     {
-        cout << vars[(yyvsp[-1].sval)] << endl;
+        if (vars.find((yyvsp[-1].sval)) == vars.end()){
+            error("Variable " + string((yyvsp[-1].sval)) + " does not exist.");
+        } else {
+            cout << vars[(yyvsp[-1].sval)] << endl;
+        }
     }
 #line 1314 "priverte.tab.c"
     break;
 
   case 7:
-#line 75 "priverte.y"
+#line 81 "priverte.y"
     { (yyval.ival) = (yyvsp[-2].ival) && (yyvsp[0].ival) ? 1 : 0; }
 #line 1320 "priverte.tab.c"
     break;
 
   case 8:
-#line 76 "priverte.y"
+#line 82 "priverte.y"
     { (yyval.ival) = (yyvsp[-2].ival) || (yyvsp[0].ival) ? 1 : 0; }
 #line 1326 "priverte.tab.c"
     break;
 
   case 9:
-#line 77 "priverte.y"
+#line 83 "priverte.y"
     { (yyval.ival) = !(yyvsp[0].ival) ? 1 : 0; }
 #line 1332 "priverte.tab.c"
     break;
 
   case 10:
-#line 78 "priverte.y"
+#line 84 "priverte.y"
     { (yyval.ival) = (yyvsp[-2].ival) > (yyvsp[0].ival) ? 1 : 0; }
 #line 1338 "priverte.tab.c"
     break;
 
   case 11:
-#line 79 "priverte.y"
+#line 85 "priverte.y"
     { (yyval.ival) = (yyvsp[-2].ival) < (yyvsp[0].ival) ? 1 : 0; }
 #line 1344 "priverte.tab.c"
     break;
 
   case 12:
-#line 80 "priverte.y"
+#line 86 "priverte.y"
     { (yyval.ival) = (yyvsp[-2].ival) >= (yyvsp[0].ival) ? 1 : 0; }
 #line 1350 "priverte.tab.c"
     break;
 
   case 13:
-#line 81 "priverte.y"
+#line 87 "priverte.y"
     { (yyval.ival) = (yyvsp[-2].ival) <= (yyvsp[0].ival) ? 1 : 0; }
 #line 1356 "priverte.tab.c"
     break;
 
   case 14:
-#line 82 "priverte.y"
+#line 88 "priverte.y"
     { (yyval.ival) = (yyvsp[-2].ival) == (yyvsp[0].ival) ? 1 : 0; }
 #line 1362 "priverte.tab.c"
     break;
 
   case 15:
-#line 83 "priverte.y"
+#line 89 "priverte.y"
     { (yyval.ival) = (yyvsp[-2].ival) != (yyvsp[0].ival) ? 1 : 0; }
 #line 1368 "priverte.tab.c"
     break;
 
   case 16:
-#line 86 "priverte.y"
+#line 92 "priverte.y"
     {
         if((yyvsp[-5].ival)) {
-            cout << "if " << (yyvsp[-2].sval) << endl;
-            free((yyvsp[-2].sval));
+            (yyval.sval) = (yyvsp[-2].sval);
         }
     }
-#line 1379 "priverte.tab.c"
+#line 1378 "priverte.tab.c"
     break;
 
   case 17:
-#line 92 "priverte.y"
+#line 97 "priverte.y"
     {
         if((yyvsp[-10].ival)) {
             cout << "if " << (yyvsp[-7].sval) << endl;
@@ -1389,20 +1388,11 @@ yyreduce:
             free((yyvsp[-2].sval));
         }
     }
-#line 1393 "priverte.tab.c"
-    break;
-
-  case 24:
-#line 115 "priverte.y"
-    {
-        cout << "new priverte: " << (yyvsp[-5].ival) << " " << (yyvsp[-4].ival) << " " << (yyvsp[-3].dval) << " " << (yyvsp[-2].dval) << " " << (yyvsp[-1].sval) << endl;
-        free((yyvsp[-1].sval));
-    }
-#line 1402 "priverte.tab.c"
+#line 1392 "priverte.tab.c"
     break;
 
 
-#line 1406 "priverte.tab.c"
+#line 1396 "priverte.tab.c"
 
       default: break;
     }
@@ -1634,7 +1624,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 132 "priverte.y"
+#line 134 "priverte.y"
 
 
 int main(int, char**) {
@@ -1653,4 +1643,9 @@ int main(int, char**) {
 void yyerror(const char *s) {
   cout << "Parse error on line " << linenum << "! Message: " << s << endl;
   exit(-1);
+}
+
+void error(string err) {
+    cout << "Error: " << err << endl;
+    exit(-1);
 }
