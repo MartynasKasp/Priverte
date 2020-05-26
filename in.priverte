@@ -1,11 +1,7 @@
-pRIVERte 1.1
-
-type foo
-type bar
-type bas
-
-0 -2 5.5 0.2 foo
--6 9 8.01 -77.95 bar
-21 -655 98.1 7.564 bas
+if (0) { "Labas krabas" }
+if (1 && 0) { "Dumelis" }
+if (0) { "kai vienas" }
+else { "haha" }
+if (1 > 0) { "nulis daugiau" } else { "nulis maziau" }
 
 end

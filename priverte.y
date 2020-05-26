@@ -1,14 +1,16 @@
 %{
-  #include <cstdio>
-  #include <iostream>
-  using namespace std;
+    #include <cstdio>
+    #include <iostream>
+    #include <map>
+    using namespace std;
 
-  extern int yylex();
-  extern int yyparse();
-  extern FILE *yyin;
-  extern int linenum;
- 
-  void yyerror(const char *s);
+    extern int yylex();
+    extern int yyparse();
+    extern FILE *yyin;
+    extern int linenum;
+    map<char*, int> vars;
+
+    void yyerror(const char *s);
 %}
 
 %union {
@@ -17,37 +19,90 @@
   char *sval;
 }
 
+%token <sval> IF
+%token <sval> ELSEIF
+%token <sval> ELSE
+%token <sval> AND
+%token <sval> OR
+%token <sval> NOT
+%token <sval> PR
+%token <sval> PL
+%token <sval> CR
+%token <sval> CL
+%token <sval> GT
+%token <sval> LT
+%token <sval> GTE
+%token <sval> LTE
+%token <sval> EQ
+%token <sval> NEQ
+%token <sval> ASSIGN
+%token <sval> PRINT
+
 %token PRIVERTE TYPE
-%token END ENDL
+%token END ENDL SPACE
 
 %token <ival> INT
 %token <dval> DOUBLE
 %token <sval> STRING
+%token <sval> VAR
+
+%type<ival> condition expression
 
 %%
 
 priverte:
-    header template body_section footer {
+    body_section footer {
         cout << "done with a priverte file!" << endl;
+        cout << "size " << vars.size() << endl;
     }
     ;
-header:
-    PRIVERTE DOUBLE ENDLS {
-        cout << "reading a priverte file version " << $2 << endl;
+var_assignment:
+    VAR ASSIGN INT ENDLS {
+        vars[$1] = $3;
+        free($1);
     }
     ;
-template:
-    typelines
-    ;
-typelines:
-    typelines typeline
-    | typeline
-    ;
-typeline:
-    TYPE STRING ENDLS {
-        cout << "new defined priverte type: " << $2 << endl;
-        free($2);
+print_statement:
+    PRINT VAR ENDLS {
+        cout << vars[$2] << endl;
     }
+    ;
+expression:
+    INT
+    ;
+condition:
+    expression
+    | expression AND expression { $$ = $1 && $3 ? 1 : 0; }
+    | expression OR expression { $$ = $1 || $3 ? 1 : 0; }
+    | NOT expression { $$ = !$2 ? 1 : 0; }
+    | expression GT expression { $$ = $1 > $3 ? 1 : 0; }
+    | expression LT expression { $$ = $1 < $3 ? 1 : 0; }
+    | expression GTE expression { $$ = $1 >= $3 ? 1 : 0; }
+    | expression LTE expression { $$ = $1 <= $3 ? 1 : 0; }
+    | expression EQ expression { $$ = $1 == $3 ? 1 : 0; }
+    | expression NEQ expression { $$ = $1 != $3 ? 1 : 0; }
+    ;
+if_statement:
+    IF PL condition PR CL STRING CR ENDLS {
+        if($3) {
+            cout << "if " << $6 << endl;
+            free($6);
+        }
+    }
+    | IF PL condition PR CL STRING CR COND_ENDL ELSE CL STRING CR ENDLS {
+        if($3) {
+            cout << "if " << $6 << endl;
+            free($6);
+        } else {
+            cout << "else " << $11 << endl;
+            free($11);
+        }
+    }
+    ;
+statement:
+    if_statement
+    | var_assignment
+    | print_statement
     ;
 body_section:
     body_lines
@@ -61,9 +116,14 @@ body_line:
         cout << "new priverte: " << $1 << " " << $2 << " " << $3 << " " << $4 << " " << $5 << endl;
         free($5);
     }
+    | statement
     ;
 footer:
     END ENDLS
+    ;
+COND_ENDL:
+    ENDL
+    | %empty
     ;
 ENDLS:
     ENDLS ENDL

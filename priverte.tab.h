@@ -49,13 +49,33 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    PRIVERTE = 258,
-    TYPE = 259,
-    END = 260,
-    ENDL = 261,
-    INT = 262,
-    DOUBLE = 263,
-    STRING = 264
+    IF = 258,
+    ELSEIF = 259,
+    ELSE = 260,
+    AND = 261,
+    OR = 262,
+    NOT = 263,
+    PR = 264,
+    PL = 265,
+    CR = 266,
+    CL = 267,
+    GT = 268,
+    LT = 269,
+    GTE = 270,
+    LTE = 271,
+    EQ = 272,
+    NEQ = 273,
+    ASSIGN = 274,
+    PRINT = 275,
+    PRIVERTE = 276,
+    TYPE = 277,
+    END = 278,
+    ENDL = 279,
+    SPACE = 280,
+    INT = 281,
+    DOUBLE = 282,
+    STRING = 283,
+    VAR = 284
   };
 #endif
 
@@ -63,13 +83,13 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 14 "priverte.y"
+#line 16 "priverte.y"
 
   int ival;
   double dval;
   char *sval;
 
-#line 73 "priverte.tab.h"
+#line 93 "priverte.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
