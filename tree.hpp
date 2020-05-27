@@ -75,10 +75,15 @@ class PrintStatement : public Statement {
         void execute();
 };
 
-Expression* newValue(int value);
-Expression* newExpression(OperatorType eoperator, Statement* left, Statement* right);
+// Program
+void error(string err);
+
+// Semantic tree
 Program* appendStatement(Program* program, Statement* statement);
 Program* firstStatement(Statement* statement);
+
+// Expression assignments
+Expression* newValue(int value);
+Expression* newExpression(OperatorType eoperator, Statement* left, Statement* right);
 AssingmentStatement* newAssignment(string variable, int value);
 PrintStatement* newPrint(string variable);
-void error(string err);

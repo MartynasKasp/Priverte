@@ -4,24 +4,13 @@
 #include <string>
 #include "tree.hpp"
 
-Expression* newValue(int value) {
-    Expression* foo = new Expression();
-    foo->value = value;
-    foo->eOperator = OperatorType::__NIL;
-    foo->type = StatementTypes::EXPRESSION;
-    return foo;
+// Program
+void error(string err) {
+    cout << "Error: " << err << endl;
+    exit(-1);
 }
 
-Expression* newExpression(OperatorType eoperator, Statement* left, Statement* right) {
-    Expression* foo = new Expression();
-    foo->eOperator = eoperator;
-    foo->type = StatementTypes::EXPRESSION;
-    foo->expressionLeft = static_cast<Expression*>(left);
-    foo->expressionRight = static_cast<Expression*>(right);
-    
-    return foo;
-}
-
+// Semantic tree
 Program* firstStatement(Statement* statement) {
     Program* program = new Program();
     vector<Statement*> temp;
@@ -35,6 +24,7 @@ Program* appendStatement(Program* program, Statement* statement) {
     return program;
 }
 
+// Executes
 bool Program::execute() {
     for(auto const& statement: this->statements) {
         switch(statement->type) {
@@ -97,23 +87,8 @@ int Expression::execute() {
     return foo;
 }
 
-AssingmentStatement* newAssignment(string variable, int value) {
-    AssingmentStatement* statement = new AssingmentStatement();
-    statement->type = StatementTypes::VAR_ASSIGNMENT;
-    statement->varValue = value;
-    statement->name = variable;
-    return statement;
-}
-
 void AssingmentStatement::execute() {
     Statement::variables[this->name] = this->varValue;
-}
-
-PrintStatement* newPrint(string variable) {
-    PrintStatement* statement = new PrintStatement();
-    statement->name = variable;
-    statement->type = StatementTypes::PRINT_STATEMENT;
-    return statement;
 }
 
 void PrintStatement::execute() {
@@ -125,7 +100,36 @@ void PrintStatement::execute() {
     }
 }
 
-void error(string err) {
-    cout << "Error: " << err << endl;
-    exit(-1);
+// Expressions
+Expression* newValue(int value) {
+    Expression* foo = new Expression();
+    foo->value = value;
+    foo->eOperator = OperatorType::__NIL;
+    foo->type = StatementTypes::EXPRESSION;
+    return foo;
+}
+
+Expression* newExpression(OperatorType eoperator, Statement* left, Statement* right) {
+    Expression* foo = new Expression();
+    foo->eOperator = eoperator;
+    foo->type = StatementTypes::EXPRESSION;
+    foo->expressionLeft = static_cast<Expression*>(left);
+    foo->expressionRight = static_cast<Expression*>(right);
+    
+    return foo;
+}
+
+AssingmentStatement* newAssignment(string variable, int value) {
+    AssingmentStatement* statement = new AssingmentStatement();
+    statement->type = StatementTypes::VAR_ASSIGNMENT;
+    statement->varValue = value;
+    statement->name = variable;
+    return statement;
+}
+
+PrintStatement* newPrint(string variable) {
+    PrintStatement* statement = new PrintStatement();
+    statement->name = variable;
+    statement->type = StatementTypes::PRINT_STATEMENT;
+    return statement;
 }
