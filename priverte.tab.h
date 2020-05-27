@@ -67,15 +67,16 @@ extern int yydebug;
     NEQ = 273,
     ASSIGN = 274,
     PRINT = 275,
-    PRIVERTE = 276,
-    TYPE = 277,
-    END = 278,
-    ENDL = 279,
-    SPACE = 280,
-    INT = 281,
-    DOUBLE = 282,
-    STRING = 283,
-    VAR = 284
+    SMC = 276,
+    PRIVERTE = 277,
+    TYPE = 278,
+    END = 279,
+    ENDL = 280,
+    SPACE = 281,
+    INT = 282,
+    DOUBLE = 283,
+    STRING = 284,
+    VAR = 285
   };
 #endif
 
@@ -83,13 +84,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "priverte.y"
+#line 22 "priverte.y"
 
-  int ival;
-  double dval;
-  char *sval;
+    int ival;
+    double dval;
+    char *sval;
+    Statement *statementval;
+    Program *programval;
 
-#line 93 "priverte.tab.h"
+#line 96 "priverte.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

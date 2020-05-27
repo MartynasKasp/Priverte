@@ -1,6 +1,10 @@
-foo = 10
-bar = 2
-if (1) { print foo
-}
-
-end
+6 > 0
+1 != 1
+5 || 0
+1 >= 1
+_foo9 = 10;
+print _foo9;
+kla = 8888;
+print kla;
+foo = 1;
+print foo;

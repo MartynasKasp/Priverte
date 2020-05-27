@@ -72,18 +72,22 @@
     #include <iostream>
     #include <map>
     #include <string>
+    #include "tree.hpp"
+
     using namespace std;
 
+    Program* program;
+    map<string, int> Statement::variables;
+    
     extern int yylex();
     extern int yyparse();
     extern FILE *yyin;
     extern int linenum;
-    map<string, int> vars;
 
     void yyerror(const char *s);
     void error(string err);
 
-#line 87 "priverte.tab.c"
+#line 91 "priverte.tab.c"
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus
@@ -140,15 +144,16 @@ extern int yydebug;
     NEQ = 273,
     ASSIGN = 274,
     PRINT = 275,
-    PRIVERTE = 276,
-    TYPE = 277,
-    END = 278,
-    ENDL = 279,
-    SPACE = 280,
-    INT = 281,
-    DOUBLE = 282,
-    STRING = 283,
-    VAR = 284
+    SMC = 276,
+    PRIVERTE = 277,
+    TYPE = 278,
+    END = 279,
+    ENDL = 280,
+    SPACE = 281,
+    INT = 282,
+    DOUBLE = 283,
+    STRING = 284,
+    VAR = 285
   };
 #endif
 
@@ -156,13 +161,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "priverte.y"
+#line 22 "priverte.y"
 
-  int ival;
-  double dval;
-  char *sval;
+    int ival;
+    double dval;
+    char *sval;
+    Statement *statementval;
+    Program *programval;
 
-#line 166 "priverte.tab.c"
+#line 173 "priverte.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -410,21 +417,21 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  16
+#define YYFINAL  15
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   48
+#define YYLAST   53
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  30
+#define YYNTOKENS  31
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  14
+#define YYNNTS  8
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  30
+#define YYNRULES  20
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  59
+#define YYNSTATES  39
 
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   284
+#define YYMAXUTOK   285
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
    as returned by yylex, with out-of-bounds checking.  */
@@ -463,17 +470,16 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29
+      25,    26,    27,    28,    29,    30
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    57,    57,    62,    68,    77,    80,    81,    82,    83,
-      84,    85,    86,    87,    88,    89,    92,    97,   108,   109,
-     110,   111,   114,   117,   118,   121,   124,   127,   128,   131,
-     132
+       0,    64,    64,    70,    73,    79,    80,    81,    85,    86,
+      92,    93,    94,    95,    96,    97,    98,    99,   100,   104,
+     110
 };
 #endif
 
@@ -484,11 +490,10 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "IF", "ELSEIF", "ELSE", "AND", "OR",
   "NOT", "PR", "PL", "CR", "CL", "GT", "LT", "GTE", "LTE", "EQ", "NEQ",
-  "ASSIGN", "PRINT", "PRIVERTE", "TYPE", "END", "ENDL", "SPACE", "INT",
-  "DOUBLE", "STRING", "VAR", "$accept", "priverte", "var_assignment",
-  "print_statement", "expression", "condition", "if_statement",
-  "statement", "body_section", "body_lines", "body_line", "footer",
-  "COND_ENDL", "ENDLS", YY_NULLPTR
+  "ASSIGN", "PRINT", "SMC", "PRIVERTE", "TYPE", "END", "ENDL", "SPACE",
+  "INT", "DOUBLE", "STRING", "VAR", "$accept", "priverte", "statements",
+  "statement", "expression", "condition", "var_assignment",
+  "print_statement", YY_NULLPTR
 };
 #endif
 
@@ -499,16 +504,17 @@ static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,   282,   283,   284
+     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
+     285
 };
 # endif
 
-#define YYPACT_NINF -33
+#define YYPACT_NINF -30
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-33)))
+  (!!((Yystate) == (-30)))
 
-#define YYTABLE_NINF -28
+#define YYTABLE_NINF -1
 
 #define yytable_value_is_error(Yytable_value) \
   0
@@ -517,12 +523,10 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -2,    -5,   -23,   -33,   -12,     8,   -33,   -33,   -33,   -33,
-      -4,    -2,   -33,    -6,    -7,    -1,   -33,    -7,   -33,   -33,
-       2,   -33,    -3,    13,   -33,     0,    -7,     0,   -33,     2,
-       2,     2,     2,     2,     2,     2,     2,     9,   -33,     0,
-     -33,   -33,   -33,   -33,   -33,   -33,   -33,   -33,    -2,    18,
-       6,    26,    29,     0,    23,    -2,    25,    -7,     0
+       4,    -2,   -29,   -30,   -17,     3,     4,   -30,    22,   -30,
+     -21,   -20,    35,   -14,   -19,   -30,   -30,    -2,    -2,    -2,
+      -2,    -2,    -2,    -2,    -2,   -30,   -30,   -30,   -30,   -12,
+      35,    35,    35,    35,    35,    35,    35,    35,   -30
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -530,77 +534,71 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,    21,     0,     0,    19,    20,    18,    25,
-       0,    22,    24,     0,     0,     0,     1,     0,     2,    23,
-       0,     5,     6,     0,    30,     4,     0,    26,     9,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    29,     3,
-       7,     8,    10,    11,    12,    13,    14,    15,     0,     0,
-      28,    30,     0,    16,     0,     0,     0,     0,    17
+       0,     0,     0,     9,     0,     0,     2,     4,     0,     8,
+       0,     0,    12,     0,     0,     1,     3,     0,     0,     0,
+       0,     0,     0,     0,     0,     5,     6,     7,    20,     0,
+      10,    11,    13,    14,    15,    16,    17,    18,    19
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -33,   -33,   -33,   -33,    12,   -33,   -33,   -32,   -33,   -33,
-      27,   -33,   -33,   -17
+     -30,   -30,   -30,     5,    -1,   -30,   -30,   -30
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     5,     6,     7,    22,    23,     8,     9,    10,    11,
-      12,    18,    52,    25
+      -1,     5,     6,     7,     8,     9,    10,    11
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const yytype_int8 yytable[] =
+static const yytype_uint8 yytable[] =
 {
-      27,     1,    20,    29,    30,    13,    14,    15,    16,    39,
-      31,    32,    33,    34,    35,    36,    49,    24,     2,    17,
-      21,    48,    37,    56,    38,    26,     3,     4,    21,    50,
-      51,   -27,    28,    53,    54,    55,    57,     0,    19,     0,
-      58,    40,    41,    42,    43,    44,    45,    46,    47
+      12,    13,    14,    15,    26,    27,     1,    28,    29,    38,
+       0,    16,     1,     0,     0,     0,    30,    31,    32,    33,
+      34,    35,    36,    37,     2,     3,     0,     0,    17,    18,
+       0,     3,     0,     0,     4,    19,    20,    21,    22,    23,
+      24,    17,    18,     0,     0,     0,     0,    25,    19,    20,
+      21,    22,    23,    24
 };
 
 static const yytype_int8 yycheck[] =
 {
-      17,     3,     8,     6,     7,    10,    29,    19,     0,    26,
-      13,    14,    15,    16,    17,    18,    48,    24,    20,    23,
-      26,    12,     9,    55,    24,    26,    28,    29,    26,    11,
-      24,     5,    20,    50,     5,    12,    11,    -1,    11,    -1,
-      57,    29,    30,    31,    32,    33,    34,    35,    36
+       1,    30,    19,     0,    25,    25,     8,    21,    27,    21,
+      -1,     6,     8,    -1,    -1,    -1,    17,    18,    19,    20,
+      21,    22,    23,    24,    20,    27,    -1,    -1,     6,     7,
+      -1,    27,    -1,    -1,    30,    13,    14,    15,    16,    17,
+      18,     6,     7,    -1,    -1,    -1,    -1,    25,    13,    14,
+      15,    16,    17,    18
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,    20,    28,    29,    31,    32,    33,    36,    37,
-      38,    39,    40,    10,    29,    19,     0,    23,    41,    40,
-       8,    26,    34,    35,    24,    43,    26,    43,    34,     6,
-       7,    13,    14,    15,    16,    17,    18,     9,    24,    43,
-      34,    34,    34,    34,    34,    34,    34,    34,    12,    37,
-      11,    24,    42,    43,     5,    12,    37,    11,    43
+       0,     8,    20,    27,    30,    32,    33,    34,    35,    36,
+      37,    38,    35,    30,    19,     0,    34,     6,     7,    13,
+      14,    15,    16,    17,    18,    25,    25,    25,    21,    27,
+      35,    35,    35,    35,    35,    35,    35,    35,    21
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    30,    31,    32,    33,    34,    35,    35,    35,    35,
-      35,    35,    35,    35,    35,    35,    36,    36,    37,    37,
-      37,    37,    38,    39,    39,    40,    41,    42,    42,    43,
-      43
+       0,    31,    32,    33,    33,    34,    34,    34,    35,    35,
+      36,    36,    36,    36,    36,    36,    36,    36,    36,    37,
+      38
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     2,     4,     3,     1,     1,     3,     3,     2,
-       3,     3,     3,     3,     3,     3,     8,    13,     1,     1,
-       1,     1,     1,     2,     1,     1,     2,     1,     0,     2,
-       1
+       0,     2,     1,     2,     1,     2,     2,     2,     1,     1,
+       3,     3,     2,     3,     3,     3,     3,     3,     3,     4,
+       3
 };
 
 
@@ -1285,114 +1283,109 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 57 "priverte.y"
+#line 64 "priverte.y"
     {
-        cout << "done with a priverte file!" << endl;
+        program = (yyvsp[0].programval);
     }
-#line 1293 "priverte.tab.c"
+#line 1291 "priverte.tab.c"
     break;
 
   case 3:
-#line 62 "priverte.y"
+#line 70 "priverte.y"
     {
-        vars[(yyvsp[-3].sval)] = (yyvsp[-1].ival);
-        free((yyvsp[-3].sval));
+        (yyval.programval) = appendStatement((yyvsp[-1].programval), (yyvsp[0].statementval));
     }
-#line 1302 "priverte.tab.c"
+#line 1299 "priverte.tab.c"
     break;
 
   case 4:
-#line 68 "priverte.y"
+#line 73 "priverte.y"
     {
-        if (vars.find((yyvsp[-1].sval)) == vars.end()){
-            error("Variable " + string((yyvsp[-1].sval)) + " does not exist.");
-        } else {
-            cout << vars[(yyvsp[-1].sval)] << endl;
-        }
+        (yyval.programval) = firstStatement((yyvsp[0].statementval));
     }
-#line 1314 "priverte.tab.c"
-    break;
-
-  case 7:
-#line 81 "priverte.y"
-    { (yyval.ival) = (yyvsp[-2].ival) && (yyvsp[0].ival) ? 1 : 0; }
-#line 1320 "priverte.tab.c"
-    break;
-
-  case 8:
-#line 82 "priverte.y"
-    { (yyval.ival) = (yyvsp[-2].ival) || (yyvsp[0].ival) ? 1 : 0; }
-#line 1326 "priverte.tab.c"
+#line 1307 "priverte.tab.c"
     break;
 
   case 9:
-#line 83 "priverte.y"
-    { (yyval.ival) = !(yyvsp[0].ival) ? 1 : 0; }
-#line 1332 "priverte.tab.c"
+#line 86 "priverte.y"
+    { 
+        (yyval.statementval) = newValue((yyvsp[0].ival));
+    }
+#line 1315 "priverte.tab.c"
     break;
 
   case 10:
-#line 84 "priverte.y"
-    { (yyval.ival) = (yyvsp[-2].ival) > (yyvsp[0].ival) ? 1 : 0; }
-#line 1338 "priverte.tab.c"
+#line 92 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__AND, (yyvsp[-2].statementval), (yyvsp[0].statementval)); }
+#line 1321 "priverte.tab.c"
     break;
 
   case 11:
-#line 85 "priverte.y"
-    { (yyval.ival) = (yyvsp[-2].ival) < (yyvsp[0].ival) ? 1 : 0; }
-#line 1344 "priverte.tab.c"
+#line 93 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__OR, (yyvsp[-2].statementval), (yyvsp[0].statementval)); }
+#line 1327 "priverte.tab.c"
     break;
 
   case 12:
-#line 86 "priverte.y"
-    { (yyval.ival) = (yyvsp[-2].ival) >= (yyvsp[0].ival) ? 1 : 0; }
-#line 1350 "priverte.tab.c"
+#line 94 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__NOT, (yyvsp[0].statementval), NULL);  }
+#line 1333 "priverte.tab.c"
     break;
 
   case 13:
-#line 87 "priverte.y"
-    { (yyval.ival) = (yyvsp[-2].ival) <= (yyvsp[0].ival) ? 1 : 0; }
-#line 1356 "priverte.tab.c"
+#line 95 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__GT, (yyvsp[-2].statementval), (yyvsp[0].statementval)); }
+#line 1339 "priverte.tab.c"
     break;
 
   case 14:
-#line 88 "priverte.y"
-    { (yyval.ival) = (yyvsp[-2].ival) == (yyvsp[0].ival) ? 1 : 0; }
-#line 1362 "priverte.tab.c"
+#line 96 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__LT, (yyvsp[-2].statementval), (yyvsp[0].statementval)); }
+#line 1345 "priverte.tab.c"
     break;
 
   case 15:
-#line 89 "priverte.y"
-    { (yyval.ival) = (yyvsp[-2].ival) != (yyvsp[0].ival) ? 1 : 0; }
-#line 1368 "priverte.tab.c"
+#line 97 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__GTE, (yyvsp[-2].statementval), (yyvsp[0].statementval)); }
+#line 1351 "priverte.tab.c"
     break;
 
   case 16:
-#line 92 "priverte.y"
-    {
-        if((yyvsp[-5].ival)) {
-            (yyval.sval) = (yyvsp[-2].sval);
-        }
-    }
-#line 1378 "priverte.tab.c"
+#line 98 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__LTE, (yyvsp[-2].statementval), (yyvsp[0].statementval)); }
+#line 1357 "priverte.tab.c"
     break;
 
   case 17:
-#line 97 "priverte.y"
+#line 99 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__EQ, (yyvsp[-2].statementval), (yyvsp[0].statementval)); }
+#line 1363 "priverte.tab.c"
+    break;
+
+  case 18:
+#line 100 "priverte.y"
+    { (yyval.statementval) = newExpression(OperatorType::__NEQ, (yyvsp[-2].statementval), (yyvsp[0].statementval)); }
+#line 1369 "priverte.tab.c"
+    break;
+
+  case 19:
+#line 104 "priverte.y"
     {
-        if((yyvsp[-10].ival)) {
-            cout << "if " << (yyvsp[-7].sval) << endl;
-            free((yyvsp[-7].sval));
-        } else {
-            cout << "else " << (yyvsp[-2].sval) << endl;
-            free((yyvsp[-2].sval));
-        }
+        (yyval.statementval) = newAssignment((yyvsp[-3].sval), (yyvsp[-1].ival));
     }
-#line 1392 "priverte.tab.c"
+#line 1377 "priverte.tab.c"
+    break;
+
+  case 20:
+#line 110 "priverte.y"
+    {
+        (yyval.statementval) = newPrint((yyvsp[-1].sval));
+    }
+#line 1385 "priverte.tab.c"
     break;
 
 
-#line 1396 "priverte.tab.c"
+#line 1389 "priverte.tab.c"
 
       default: break;
     }
@@ -1624,28 +1617,96 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 134 "priverte.y"
+#line 114 "priverte.y"
 
 
-int main(int, char**) {
+// var_assignment:
+//     VAR ASSIGN INT ENDLS {
+//         vars[$1] = $3;
+//         free($1);
+//     }
+//     ;
+// print_statement:
+//     PRINT VAR ENDLS {
+//         if (vars.find($2) == vars.end()){
+//             error("Variable " + string($2) + " does not exist.");
+//         } else {
+//             cout << vars[$2] << endl;
+//         }
+//     }
+//     ;
+// expression:
+//     INT
+//     ;
+// condition:
+//     expression
+//     | expression AND expression { $$ = $1 && $3 ? 1 : 0; }
+//     | expression OR expression { $$ = $1 || $3 ? 1 : 0; }
+//     | NOT expression { $$ = !$2 ? 1 : 0; }
+//     | expression GT expression { $$ = $1 > $3 ? 1 : 0; }
+//     | expression LT expression { $$ = $1 < $3 ? 1 : 0; }
+//     | expression GTE expression { $$ = $1 >= $3 ? 1 : 0; }
+//     | expression LTE expression { $$ = $1 <= $3 ? 1 : 0; }
+//     | expression EQ expression { $$ = $1 == $3 ? 1 : 0; }
+//     | expression NEQ expression { $$ = $1 != $3 ? 1 : 0; }
+//     ;
+// if_statement:
+//     IF PL condition PR CL statement CR ENDLS {
+//         if($3) {
+//             $$ = $6;
+//         }
+//     }
+//     | IF PL condition PR CL statement CR COND_ENDL ELSE CL statement CR ENDLS {
+//         if($3) {
+//             cout << "if " << $6 << endl;
+//             free($6);
+//         } else {
+//             cout << "else " << $11 << endl;
+//             free($11);
+//         }
+//     }
+//     ;
+// statement:
+//     if_statement
+//     | var_assignment
+//     | print_statement
+//     | STRING
+//     ;
+// body_section:
+//     body_lines
+//     ;
+// body_lines:
+//     body_lines body_line
+//     | body_line
+//     ;
+// body_line:
+//     statement
+//     ;
+// footer:
+//     END ENDLS
+//     ;
+// COND_ENDL:
+//     ENDL
+//     | %empty
+//     ;
+// ENDLS:
+//     ENDLS ENDL
+//     | ENDL ;
 
-  FILE *myfile = fopen("in.priverte", "r");
-  if (!myfile) {
-    cout << "I can't open a.priverte.file!" << endl;
-    return -1;
-  }
-  yyin = myfile;
-  
-  yyparse();
-  
+int main(int argc, const char* argv[]) {
+    FILE *myfile = fopen(argv[1], "r");
+    if (!myfile) {
+        cout << "I can't open " + string(argv[1]) + "!" << endl;
+        return -1;
+    }
+    yyin = myfile;
+    
+    yyparse();
+    
+    program->execute();
 }
 
 void yyerror(const char *s) {
   cout << "Parse error on line " << linenum << "! Message: " << s << endl;
   exit(-1);
-}
-
-void error(string err) {
-    cout << "Error: " << err << endl;
-    exit(-1);
 }
