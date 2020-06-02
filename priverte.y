@@ -9,6 +9,7 @@
 
     Program* program;
     map<string, int> Statement::variables;
+    map<string, Program*> Program::functions;
     
     extern int yylex();
     extern int yyparse();
@@ -27,6 +28,8 @@
     Program *programval;
 }
 
+%token <sval> FUNC
+%token <sval> CALL
 %token <sval> IF
 %token <sval> FOR
 %token <sval> ELSE
@@ -60,7 +63,7 @@
 %token <sval> STRING
 %token <sval> VAR
 
-%type<statementval> expression statement priverte condition var_assignment print_statement calculation calcExpression if_statement for_statement
+%type<statementval> expression statement priverte condition var_assignment print_statement calculation calcExpression if_statement for_statement func_declaration func_execution
 %type<programval> statements
 
 %%
@@ -87,6 +90,8 @@ statement:
     | calculation SMC COND_ENDL 
     | if_statement COND_ENDL
     | for_statement COND_ENDL
+    | func_declaration COND_ENDL
+    | func_execution COND_ENDL
     ;
 
 expression:
@@ -131,6 +136,12 @@ var_assignment:
 for_statement:
     FOR PL var_assignment expression SMC var_assignment PR COND_ENDL CL COND_ENDL statements COND_ENDL CR { $$ = newForStatement($3, $4, $6, $11); }
     ;
+func_declaration:
+    FUNC VAR CL COND_ENDL statements COND_ENDL CR { $$ = newFunction($2,$5); }
+    ;
+func_execution:
+    VAR CALL SMC { $$ = newFunctionExecution($1); }
+    ;
 
 print_statement:
     PRINT VAR SMC {
@@ -140,80 +151,8 @@ print_statement:
 COND_ENDL:
     ENDL
     | %empty
+    ;
 %%
-
-// var_assignment:
-//     VAR ASSIGN INT ENDLS {
-//         vars[$1] = $3;
-//         free($1);
-//     }
-//     ;
-// print_statement:
-//     PRINT VAR ENDLS {
-//         if (vars.find($2) == vars.end()){
-//             error("Variable " + string($2) + " does not exist.");
-//         } else {
-//             cout << vars[$2] << endl;
-//         }
-//     }
-//     ;
-// expression:
-//     INT
-//     ;
-// condition:
-//     expression
-//     | expression AND expression { $$ = $1 && $3 ? 1 : 0; }
-//     | expression OR expression { $$ = $1 || $3 ? 1 : 0; }
-//     | NOT expression { $$ = !$2 ? 1 : 0; }
-//     | expression GT expression { $$ = $1 > $3 ? 1 : 0; }
-//     | expression LT expression { $$ = $1 < $3 ? 1 : 0; }
-//     | expression GTE expression { $$ = $1 >= $3 ? 1 : 0; }
-//     | expression LTE expression { $$ = $1 <= $3 ? 1 : 0; }
-//     | expression EQ expression { $$ = $1 == $3 ? 1 : 0; }
-//     | expression NEQ expression { $$ = $1 != $3 ? 1 : 0; }
-//     ;
-// if_statement:
-//     IF PL condition PR CL statement CR ENDLS {
-//         if($3) {
-//             $$ = $6;
-//         }
-//     }
-//     | IF PL condition PR CL statement CR COND_ENDL ELSE CL statement CR ENDLS {
-//         if($3) {
-//             cout << "if " << $6 << endl;
-//             free($6);
-//         } else {
-//             cout << "else " << $11 << endl;
-//             free($11);
-//         }
-//     }
-//     ;
-// statement:
-//     if_statement
-//     | var_assignment
-//     | print_statement
-//     | STRING
-//     ;
-// body_section:
-//     body_lines
-//     ;
-// body_lines:
-//     body_lines body_line
-//     | body_line
-//     ;
-// body_line:
-//     statement
-//     ;
-// footer:
-//     END ENDLS
-//     ;
-// COND_ENDL:
-//     ENDL
-//     | %empty
-//     ;
-// ENDLS:
-//     ENDLS ENDL
-//     | ENDL ;
 
 int main(int argc, const char* argv[]) {
     FILE *myfile = fopen(argv[1], "r");

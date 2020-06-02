@@ -77,6 +77,18 @@ bool Statement::execute()
         forStatement->execute();
         break;
     }
+    case StatementTypes::FUNC_DECLARATION:
+    {
+        FunctionDeclaration *fDeclaration = static_cast<FunctionDeclaration *>(this);
+        fDeclaration->execute();
+        break;
+    }
+    case StatementTypes::FUNC_EXECUTION:
+    {
+        FunctionExecution *fExecution = static_cast<FunctionExecution *>(this);
+        fExecution->execute();
+        break;
+    }
     }
 }
 
@@ -217,6 +229,23 @@ void ForStatement::execute()
     }
 }
 
+void FunctionDeclaration::execute()
+{
+    Program::functions[this->name] = this->functionBody;
+}
+
+void FunctionExecution::execute()
+{
+    if (Program::functions.find(this->name) == Program::functions.end())
+    {
+        error("Function " + this->name + " does not exist.");
+    }
+    else
+    {
+        Program::functions[this->name]->execute();
+    }
+}
+
 // Expressions
 Expression *newValue(int value)
 {
@@ -318,5 +347,22 @@ Expression *newExpressionVariable(string variableName)
     statement->type = StatementTypes::EXPRESSION;
     statement->eOperator = OperatorType::__VAR;
     statement->variableName = variableName;
+    return statement;
+}
+
+FunctionDeclaration *newFunction(string name, Statement *functionBody)
+{
+    FunctionDeclaration *statement = new FunctionDeclaration();
+    statement->type = StatementTypes::FUNC_DECLARATION;
+    statement->name = name;
+    statement->functionBody = static_cast<Program *>(functionBody);
+    return statement;
+}
+
+FunctionExecution *newFunctionExecution(string name)
+{
+    FunctionExecution *statement = new FunctionExecution();
+    statement->type = StatementTypes::FUNC_EXECUTION;
+    statement->name = name;
     return statement;
 }

@@ -11,7 +11,9 @@ enum class StatementTypes
     VAR_ASSIGNMENT,
     EXPRESSION,
     CALCULATION,
-    FOR_STATEMENT
+    FOR_STATEMENT,
+    FUNC_DECLARATION,
+    FUNC_EXECUTION
 };
 
 enum class OperatorType
@@ -57,6 +59,7 @@ class Program : public Statement
 {
 public:
     vector<Statement *> statements;
+    static map<string, Program *> functions;
     bool execute();
 };
 
@@ -113,6 +116,21 @@ public:
     void execute();
 };
 
+class FunctionDeclaration : public Statement
+{
+public:
+    string name;
+    Program *functionBody;
+    void execute();
+};
+
+class FunctionExecution : public Statement
+{
+public:
+    string name;
+    void execute();
+};
+
 // Program
 void error(string err);
 
@@ -132,3 +150,5 @@ CalculationStatement *newCalculationVariable(string variableName);
 CalculationStatement *newCalculation(CalculationOperatorType coperator, Statement *left, Statement *right);
 IfStatement *newIfStatement(Statement *expression, Statement *ifTrue, Statement *ifFalse);
 ForStatement *newForStatement(Statement *initialAssignment, Statement *condition, Statement *increment, Statement *innerStatement);
+FunctionDeclaration *newFunction(string name, Statement *functionBody);
+FunctionExecution *newFunctionExecution(string name);

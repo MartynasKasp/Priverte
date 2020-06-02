@@ -10,6 +10,8 @@
 if                  { return IF; }
 else                { return ELSE; }
 for                 { return FOR; }
+func                { return FUNC; }
+\(\)                { return CALL; }
 &&                  { return AND; }
 \|\|                { return OR; }
 !                   { return NOT; }
