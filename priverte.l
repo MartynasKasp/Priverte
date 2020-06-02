@@ -8,8 +8,8 @@
 %%
 [ \t]               ;
 if                  { return IF; }
-elseif              { return ELSEIF; }
 else                { return ELSE; }
+for                 { return FOR; }
 &&                  { return AND; }
 \|\|                { return OR; }
 !                   { return NOT; }
@@ -25,6 +25,10 @@ else                { return ELSE; }
 \!\=                { return NEQ; }
 \=                  { return ASSIGN; }
 \;                  { return SMC; }
+\+                  { return PLUS; }
+-                   { return MINUS; }
+\*                  { return ASTERISK; }
+\/                  { return FORWARDSLASH; }
 pRIVERte            { return PRIVERTE; }
 type                { return TYPE; }
 end                 { return END; }

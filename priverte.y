@@ -28,7 +28,7 @@
 }
 
 %token <sval> IF
-%token <sval> ELSEIF
+%token <sval> FOR
 %token <sval> ELSE
 %token <sval> AND
 %token <sval> OR
@@ -46,6 +46,11 @@
 %token <sval> ASSIGN
 %token <sval> PRINT
 %token <sval> SMC
+%token <sval> MINUS
+%token <sval> PLUS
+%token <sval> ASTERISK
+%token <sval> FORWARDSLASH
+
 
 %token PRIVERTE TYPE
 %token END ENDL SPACE
@@ -55,7 +60,7 @@
 %token <sval> STRING
 %token <sval> VAR
 
-%type<statementval> expression statement priverte condition var_assignment print_statement
+%type<statementval> expression statement priverte condition var_assignment print_statement calculation calcExpression if_statement for_statement
 %type<programval> statements
 
 %%
@@ -76,18 +81,34 @@ statements:
     ;
 
 statement:
-    expression ENDL
-    | var_assignment ENDL
-    | print_statement ENDL
+    expression COND_ENDL
+    | var_assignment COND_ENDL
+    | print_statement COND_ENDL
+    | calculation SMC COND_ENDL 
+    | if_statement COND_ENDL
+    | for_statement COND_ENDL
     ;
 
 expression:
     condition
-    | INT { 
-        $$ = newValue($1);
-    }
+    | INT { $$ = newValue($1); }
+    | VAR { $$ = newExpressionVariable($1); }
+    ;
+if_statement:
+    IF PL expression PR COND_ENDL CL COND_ENDL statements COND_ENDL CR COND_ENDL ELSE if_statement { $$ = newIfStatement($3, $8, $13); } |
+    IF PL expression PR COND_ENDL CL COND_ENDL statements COND_ENDL CR COND_ENDL ELSE COND_ENDL CL COND_ENDL statements COND_ENDL CR { $$ = newIfStatement($3, $8, $16);}
     ;
 
+calcExpression:
+    calculation | INT { $$ = newCalculationValue($1); } | VAR { $$ = newCalculationVariable($1); } 
+    ;
+calculation:
+    calcExpression PLUS calcExpression { $$ = newCalculation(CalculationOperatorType::__PLUS, $1, $3); } |
+    calcExpression MINUS calcExpression { $$ = newCalculation(CalculationOperatorType::__MINUS, $1, $3); } |
+    calcExpression ASTERISK calcExpression { $$ = newCalculation(CalculationOperatorType::__ASTERISK, $1, $3); } |
+    calcExpression FORWARDSLASH calcExpression { $$ = newCalculation(CalculationOperatorType::__FORWARDSLASH, $1, $3); }
+    ;
+    
 condition:
     expression AND expression { $$ = newExpression(OperatorType::__AND, $1, $3); }
     | expression OR expression { $$ = newExpression(OperatorType::__OR, $1, $3); }
@@ -103,7 +124,12 @@ condition:
 var_assignment:
     VAR ASSIGN INT SMC {
         $$ = newAssignment($1, $3);
+    } | VAR ASSIGN calculation SMC {
+        $$ = newCalculationAssignment($1, $3);
     }
+    ;
+for_statement:
+    FOR PL var_assignment expression SMC var_assignment PR COND_ENDL CL COND_ENDL statements COND_ENDL CR { $$ = newForStatement($3, $4, $6, $11); }
     ;
 
 print_statement:
@@ -111,6 +137,9 @@ print_statement:
         $$ = newPrint($2);
     }
     ;
+COND_ENDL:
+    ENDL
+    | %empty
 %%
 
 // var_assignment:
@@ -195,7 +224,6 @@ int main(int argc, const char* argv[]) {
     yyin = myfile;
     
     yyparse();
-    
     program->execute();
 }
 

@@ -4,15 +4,20 @@
 
 using namespace std;
 
-enum class StatementTypes {
-    IF_STATEMENT, 
+enum class StatementTypes
+{
+    IF_STATEMENT,
     PRINT_STATEMENT,
     VAR_ASSIGNMENT,
-    EXPRESSION
+    EXPRESSION,
+    CALCULATION,
+    FOR_STATEMENT
 };
 
-enum class OperatorType {
+enum class OperatorType
+{
     __NIL,
+    __VAR,
     __AND,
     __OR,
     __NOT,
@@ -28,62 +33,102 @@ enum class OperatorType {
     __NEQ
 };
 
-class Statement {
-    public:
-        string executable;
-        bool execute();
-        StatementTypes type;
-        static map<string, int> variables;
-        union
-        {
-            int value;
-        };
+enum class CalculationOperatorType
+{
+    __PLUS,
+    __MINUS,
+    __ASTERISK,
+    __FORWARDSLASH,
+    __NIL,
+    __VAR
 };
 
-class Program : public Statement {
-    public:
-        vector<Statement*> statements;
-        bool execute();
+class Statement
+{
+public:
+    bool execute();
+    StatementTypes type;
+    static map<string, int> variables;
+    int value;
+    string variableName;
 };
 
-class Expression : public Statement {
-    public:
-        OperatorType eOperator;
-        Expression *expressionLeft;
-        Expression *expressionRight;
-        int execute();
+class Program : public Statement
+{
+public:
+    vector<Statement *> statements;
+    bool execute();
 };
 
-class IfStatement : public Statement {
-    public:
-        Expression *expression;
-        Statement *ifTrue;
-        Statement *ifFalse;
-        bool execute();
+class Expression : public Statement
+{
+public:
+    OperatorType eOperator;
+    Expression *expressionLeft;
+    Expression *expressionRight;
+    int execute();
 };
 
-class AssingmentStatement : public Statement {
-    public:
-        string name;
-        int varValue;
-        void execute();
+class IfStatement : public Statement
+{
+public:
+    Expression *expression;
+    Program *ifTrue;
+    Program *ifFalse;
+    void execute();
 };
 
-class PrintStatement : public Statement {
-    public:
-        string name;
-        void execute();
+class CalculationStatement : public Statement
+{
+public:
+    CalculationOperatorType calculation;
+    CalculationStatement *left;
+    CalculationStatement *right;
+    int execute();
+};
+
+class AssignmentStatement : public Statement
+{
+public:
+    string name;
+    CalculationStatement *calculation;
+    int varValue;
+    void execute();
+};
+
+class ForStatement : public Statement
+{
+public:
+    AssignmentStatement *initialAssignment;
+    Expression *condition;
+    AssignmentStatement *increment;
+    Program *innerStatement;
+    void execute();
+};
+
+class PrintStatement : public Statement
+{
+public:
+    string name;
+    void execute();
 };
 
 // Program
 void error(string err);
 
 // Semantic tree
-Program* appendStatement(Program* program, Statement* statement);
-Program* firstStatement(Statement* statement);
+Program *appendStatement(Program *program, Statement *statement);
+Program *firstStatement(Statement *statement);
 
 // Expression assignments
-Expression* newValue(int value);
-Expression* newExpression(OperatorType eoperator, Statement* left, Statement* right);
-AssingmentStatement* newAssignment(string variable, int value);
-PrintStatement* newPrint(string variable);
+Expression *newValue(int value);
+Expression *newExpression(OperatorType eoperator, Statement *left, Statement *right);
+Expression *newExpressionVariable(string variableName);
+AssignmentStatement *newAssignment(string variable, int value);
+AssignmentStatement *newCalculationAssignment(string variable, Statement *calculation);
+PrintStatement *newPrint(string variable);
+CalculationStatement *newCalculationValue(int value);
+CalculationStatement *newCalculationVariable(string variableName);
+CalculationStatement *newCalculation(CalculationOperatorType coperator, Statement *left, Statement *right);
+IfStatement *newIfStatement(Statement *expression, Statement *ifTrue, Statement *ifFalse);
+ForStatement *newForStatement(Statement *initialAssignment, Statement *condition, Statement *increment, Statement *innerStatement);
